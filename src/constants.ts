@@ -8,4 +8,11 @@ export const responses = {
   errorUpdateProject: "An error occurred updating the project",
   errorDeleteProject: "An error occurred deleting the project",
   serverError: "A server error occurred",
+  successSignUp: "Sign up was successful",
+  successSignIn: "Sign in was successful",
+  userIsExist: "User already exist",
+  errorSignUp: "Invalid created new user",
+  errorSignIn: "Invalid username or password",
+  errorField: "Please recheck field!",
+  errorUserNotFound: "User not found",
 };

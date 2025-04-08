@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Project } from "../models/project.model";
 import { responses } from "../constants";
+import mongoose from "mongoose";
 
 export const addProject = async (req: Request, res: Response) => {
   try {
@@ -11,14 +12,24 @@ export const addProject = async (req: Request, res: Response) => {
       message: responses.successCreateProject,
       newProject,
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error instanceof mongoose.Error.ValidationError) {
+      const message = Object.values(error.errors).map((err) => err.message);
+      res
+        .status(400)
+        .json({
+          success: false,
+          message: responses.errorCreateProject,
+          error: message,
+        });
+    }
     res
       .status(500)
-      .json({ success: false, message: responses.errorCreateProject, error });
+      .json({ success: false, message: responses.serverError, error });
   }
 };
 
-export const getProject = async (req: Request, res: Response) => {
+export const getProject = async (_: Request, res: Response) => {
   try {
     const project = await Project.find();
     if (project.length === 0) {
@@ -40,16 +51,21 @@ export const updateProject = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, description, link } = req.body;
-    const project = await Project.findByIdAndUpdate(id, {
-      name,
-      description,
-      link,
-    });
+    const project = await Project.findByIdAndUpdate(
+      id,
+      {
+        name,
+        description,
+        link,
+      },
+      { new: true } //mengembalikan data yang telah diperbarui
+    );
 
     if (!project) {
       res
         .status(404)
-        .json({ success: false, message: responses.errorNotFound, project });
+        .json({ success: false, message: responses.errorNotFound });
+      return;
     }
 
     res.status(201).json({
@@ -61,5 +77,31 @@ export const updateProject = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ success: false, message: responses.errorUpdateProject, error });
+  }
+};
+
+export const softDelete = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const project = await Project.findByIdAndUpdate(
+      id,
+      { is_deleted: true },
+      { new: true }
+    );
+    if (!project) {
+      res
+        .status(404)
+        .json({ success: false, message: responses.errorNotFound, project });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: responses.successDeleteProject,
+      project,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: responses.errorDeleteProject, error });
   }
 };

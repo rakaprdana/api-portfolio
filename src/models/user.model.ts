@@ -8,6 +8,8 @@ const userSchema = new Schema({
   },
   email: { type: String, require: [true, "Email is required"], unique: true },
   password: { type: String, require: [true, "Password is required"] },
+  role: { type: String },
+  description: { type: String },
 });
 
 export const User = model("User", userSchema);

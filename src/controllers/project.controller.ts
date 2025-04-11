@@ -9,19 +9,17 @@ export const addProject = async (req: Request, res: Response) => {
     await newProject.save();
     res.status(201).json({
       success: true,
-      message: responses.successCreateProject,
+      message: responses.successCreateItem,
       newProject,
     });
   } catch (error: unknown) {
     if (error instanceof mongoose.Error.ValidationError) {
       const message = Object.values(error.errors).map((err) => err.message);
-      res
-        .status(400)
-        .json({
-          success: false,
-          message: responses.errorCreateProject,
-          error: message,
-        });
+      res.status(400).json({
+        success: false,
+        message: responses.errorCreateItem,
+        error: message,
+      });
     }
     res
       .status(500)
@@ -39,7 +37,7 @@ export const getProject = async (_: Request, res: Response) => {
     }
     res
       .status(201)
-      .json({ success: true, message: responses.successGetProject, project });
+      .json({ success: true, message: responses.successGetItem, project });
   } catch (error) {
     res
       .status(500)
@@ -70,13 +68,13 @@ export const updateProject = async (req: Request, res: Response) => {
 
     res.status(201).json({
       success: true,
-      message: responses.successUpdateProject,
+      message: responses.successUpdateItem,
       project,
     });
   } catch (error) {
     res
       .status(500)
-      .json({ success: false, message: responses.errorUpdateProject, error });
+      .json({ success: false, message: responses.errorUpdateItem, error });
   }
 };
 
@@ -96,12 +94,12 @@ export const softDelete = async (req: Request, res: Response) => {
 
     res.status(201).json({
       success: true,
-      message: responses.successDeleteProject,
+      message: responses.successDeleteItem,
       project,
     });
   } catch (error) {
     res
       .status(500)
-      .json({ success: false, message: responses.errorDeleteProject, error });
+      .json({ success: false, message: responses.errorDeleteItem, error });
   }
 };

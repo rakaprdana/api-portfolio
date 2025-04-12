@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 
 export const addProject = async (req: Request, res: Response) => {
   try {
-    const newProject = new Project(req.body);
+    const { body, file } = req;
+    const newProject = new Project({ ...body, image: file?.filename || null });
     await newProject.save();
     res.status(201).json({
       success: true,
@@ -35,9 +36,12 @@ export const getProject = async (_: Request, res: Response) => {
         .status(404)
         .json({ success: false, message: responses.errorNotFound, project });
     }
-    res
-      .status(201)
-      .json({ success: true, message: responses.successGetItem, project });
+    res.status(200).json({
+      success: true,
+      message: responses.successGetItem,
+      count: project.length,
+      project,
+    });
   } catch (error) {
     res
       .status(500)
@@ -66,7 +70,7 @@ export const updateProject = async (req: Request, res: Response) => {
       return;
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: responses.successUpdateItem,
       project,
@@ -92,7 +96,7 @@ export const softDelete = async (req: Request, res: Response) => {
         .json({ success: false, message: responses.errorNotFound, project });
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: responses.successDeleteItem,
       project,

@@ -9,7 +9,7 @@ export const addCertificate = async (req: Request, res: Response) => {
     await newItem.save();
 
     res
-      .status(200)
+      .status(201)
       .json({ success: true, message: responses.successCreateItem, newItem });
   } catch (error: unknown) {
     if (error instanceof mongoose.Error.ValidationError) {
@@ -37,8 +37,13 @@ export const getCertificate = async (_: Request, res: Response) => {
       });
     }
     res
-      .status(201)
-      .json({ success: true, message: responses.successGetItem, certificate });
+      .status(200)
+      .json({
+        success: true,
+        message: responses.successGetItem,
+        count: certificate.length,
+        certificate,
+      });
   } catch (error) {
     res
       .status(500)
@@ -68,7 +73,7 @@ export const updateCertificate = async (req: Request, res: Response) => {
       });
       return;
     }
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: responses.successUpdateItem,
       certificate,
@@ -98,7 +103,7 @@ export const deleteCertificate = async (req: Request, res: Response) => {
       return;
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: responses.successDeleteItem,
       certificate,

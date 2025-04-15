@@ -1,17 +1,13 @@
 import { Router } from "express";
-import {
-  deleteMessage,
-  getMessage,
-  getMessageById,
-  newMessage,
-} from "../controllers/message.controller";
+
 import { AuthMiddleware } from "../middlewares/auth-middleware";
+import { MessageController } from "../controllers/message.controller";
 
 const route = Router();
 
-route.get("/", getMessage);
-route.get("/:id", AuthMiddleware, getMessageById);
-route.post("/", newMessage);
-route.delete("/:id", AuthMiddleware, deleteMessage);
+route.get("/", MessageController.getMessage);
+route.get("/:id", AuthMiddleware, MessageController.getMessageById);
+route.post("/", MessageController.newMessage);
+route.delete("/:id", AuthMiddleware, MessageController.deleteMessage);
 
 export default route;

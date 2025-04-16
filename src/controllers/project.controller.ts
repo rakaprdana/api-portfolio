@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { Project } from "../models/project.model";
 import { responses } from "../constants";
 import mongoose from "mongoose";
 import { ProjectService } from "../services/project.service";
@@ -28,9 +27,7 @@ export class ProjectController {
           error: message,
         });
       }
-      res
-        .status(500)
-        .json({ success: false, message: responses.serverError, error });
+      res.status(500).json({ success: false, message: responses.serverError });
     }
   };
 

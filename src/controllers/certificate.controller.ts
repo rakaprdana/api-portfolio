@@ -2,115 +2,102 @@ import { Request, Response } from "express";
 import { Certificate } from "../models/certificate.model";
 import { responses } from "../constants";
 import mongoose from "mongoose";
+import { CertificateService } from "../services/certificate.service";
 
-export const addCertificate = async (req: Request, res: Response) => {
-  try {
-    const newItem = new Certificate(req.body);
-    await newItem.save();
-
-    res
-      .status(201)
-      .json({ success: true, message: responses.successCreateItem, newItem });
-  } catch (error: unknown) {
-    if (error instanceof mongoose.Error.ValidationError) {
-      const message = Object.values(error.errors).map((err) => err.message);
-      res.status(400).json({
-        success: false,
-        message: responses.errorCreateItem,
-        error: message,
-      });
+export class CertificateController {
+  static addCertificate = async (req: Request, res: Response) => {
+    try {
+      const newItem = await CertificateService.createCertifacte(req.body);
+      res
+        .status(201)
+        .json({ success: true, message: responses.successCreateItem, newItem });
+    } catch (error: unknown) {
+      if (error instanceof mongoose.Error.ValidationError) {
+        const message = Object.values(error.errors).map((err) => err.message);
+        res.status(400).json({
+          success: false,
+          message: responses.errorCreateItem,
+          error: message,
+        });
+      }
+      res
+        .status(500)
+        .json({ success: false, message: responses.serverError, error });
     }
-    res
-      .status(500)
-      .json({ success: false, message: responses.serverError, error });
-  }
-};
+  };
 
-export const getCertificate = async (_: Request, res: Response) => {
-  try {
-    const certificate = await Certificate.find();
-    if (certificate.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: responses.errorNotFound,
-        certificate,
-      });
-    }
-    res
-      .status(200)
-      .json({
+  static getCertificate = async (_: Request, res: Response) => {
+    try {
+      const certificate = await CertificateService.getCertificate();
+      if (certificate.length === 0) {
+        res.status(404).json({
+          success: false,
+          message: responses.errorNotFound,
+          certificate,
+        });
+      }
+      res.status(200).json({
         success: true,
         message: responses.successGetItem,
         count: certificate.length,
         certificate,
       });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: responses.serverError, error: error });
-  }
-};
+    } catch (error) {
+      res
+        .status(500)
+        .json({ success: false, message: responses.serverError, error: error });
+    }
+  };
 
-export const updateCertificate = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { name, role, description } = req.body;
-    const certificate = await Certificate.findByIdAndUpdate(
-      id,
-      {
-        name,
-        role,
-        description,
-      },
-      { new: true }
-    );
-
-    if (!certificate) {
-      res.status(404).json({
-        success: false,
-        message: responses.errorNotFound,
+  static updateCertificate = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const certificate = await CertificateService.updateCertificate(
+        id,
+        req.body
+      );
+      if (!certificate) {
+        res.status(404).json({
+          success: false,
+          message: responses.errorNotFound,
+          certificate,
+        });
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        message: responses.successUpdateItem,
         certificate,
       });
-      return;
+    } catch (error) {
+      res
+        .status(500)
+        .json({ success: false, message: responses.serverError, error: error });
     }
-    res.status(200).json({
-      success: true,
-      message: responses.successUpdateItem,
-      certificate,
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: responses.serverError, error: error });
-  }
-};
+  };
 
-export const deleteCertificate = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const certificate = await Certificate.findByIdAndUpdate(
-      id,
-      { is_deleted: true },
-      { new: true }
-    );
+  static deleteCertificate = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const certificate = await CertificateService.deleteCertificate(id);
+      if (!certificate) {
+        res.status(404).json({
+          success: false,
+          message: responses.errorNotFound,
+          certificate,
+        });
+        return;
+      }
 
-    if (!certificate) {
-      res.status(404).json({
-        success: false,
-        message: responses.errorNotFound,
+      res.status(200).json({
+        success: true,
+        message: responses.successDeleteItem,
         certificate,
       });
-      return;
+    } catch (error) {
+      res
+        .status(500)
+        .json({ success: false, message: responses.serverError, error: error });
     }
-
-    res.status(200).json({
-      success: true,
-      message: responses.successDeleteItem,
-      certificate,
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: responses.serverError, error: error });
-  }
-};
+  };
+}

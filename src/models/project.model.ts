@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const projectSchema = new Schema({
-  image: { type: String, require: false },
+  image: [{ type: String, require: false }],
   name: {
     type: String,
     require: [true, "Project name is required"],

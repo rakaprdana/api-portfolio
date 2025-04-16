@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { signIn, signUp } from "../controllers/auth.controller";
-import { getProfile, updateProfile } from "../controllers/user.controller";
 import { AuthMiddleware } from "../middlewares/auth-middleware";
+import { AuthController } from "../controllers/auth.controller";
+import { UserController } from "../controllers/user.controller";
 
 const route = Router();
 
-route.post("/signup", signUp);
-route.post("/signin", signIn);
-route.get("/profile", getProfile);
-route.put("/profile/:id", AuthMiddleware, updateProfile);
+route.post("/signup", AuthController.signUp);
+route.post("/signin", AuthController.signIn);
+route.get("/profile", UserController.getProfile);
+route.put("/profile/:id", AuthMiddleware, UserController.updateProfile);
 
 export default route;

@@ -1,17 +1,12 @@
 import { Router } from "express";
 import { AuthMiddleware } from "../middlewares/auth-middleware";
-import {
-  addCertificate,
-  deleteCertificate,
-  getCertificate,
-  updateCertificate,
-} from "../controllers/certificate.controller";
+import { CertificateController } from "../controllers/certificate.controller";
 
 const route = Router();
 
-route.post("/", AuthMiddleware, addCertificate);
-route.get("/", getCertificate);
-route.put("/:id", AuthMiddleware, updateCertificate);
-route.delete("/:id", AuthMiddleware, deleteCertificate);
+route.post("/", AuthMiddleware, CertificateController.addCertificate);
+route.get("/", CertificateController.getCertificate);
+route.put("/:id", AuthMiddleware, CertificateController.updateCertificate);
+route.delete("/:id", AuthMiddleware, CertificateController.deleteCertificate);
 
 export default route;
